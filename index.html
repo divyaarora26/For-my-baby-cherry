@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valentine — A Heart for Mommy</title>
+
+  <!-- Elegant fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="scene">
+    <!-- soft particle background -->
+    <div class="particles" aria-hidden="true"></div>
+
+    <!-- Heart area -->
+    <main class="stage" role="main">
+      <section class="heart-wrap" aria-label="Interactive heart">
+        <!-- SVG heart made of blocky rectangles (voxel-inspired) -->
+        <svg id="voxelHeart"
+             viewBox="0 0 220 200"
+             width="330"
+             height="300"
+             xmlns="http://www.w3.org/2000/svg"
+             aria-hidden="false"
+             role="img">
+          <!-- main group for heartbeat scaling -->
+          <g id="heartGroup" class="heartbeat">
+            <!-- left half group -->
+            <g id="leftHalf" class="half">
+              <!-- Rects: (x, y, w, h) using a simple pixel grid (size 20) -->
+              <!-- Row 1 -->
+              <rect x="20" y="0"  width="40" height="40" class="voxel v1 lv dark"/>
+              <rect x="60" y="0"  width="40" height="40" class="voxel v2 lv"/>
+              <rect x="100" y="0" width="40" height="40" class="voxel v3 rv"/>
+              <rect x="140" y="0" width="40" height="40" class="voxel v4 rv dark"/>
+
+              <!-- Row 2 -->
+              <rect x="0"  y="40" width="40" height="40" class="voxel v5 lv dark"/>
+              <rect x="40" y="40" width="40" height="40" class="voxel v6 lv"/>
+              <rect x="80" y="40" width="40" height="40" class="voxel v7 lv"/>
+              <rect x="120" y="40" width="40" height="40" class="voxel v8 rv"/>
+              <rect x="160" y="40" width="40" height="40" class="voxel v9 rv dark"/>
+
+              <!-- Row 3 -->
+              <rect x="0"  y="80" width="40" height="40" class="voxel v10 lv dark"/>
+              <rect x="40" y="80" width="40" height="40" class="voxel v11 lv"/>
+              <rect x="80" y="80" width="40" height="40" class="voxel v12 lv"/>
+              <rect x="120" y="80" width="40" height="40" class="voxel v13 rv"/>
+              <rect x="160" y="80" width="40" height="40" class="voxel v14 rv dark"/>
+
+              <!-- Row 4 (center bulge) -->
+              <rect x="20" y="120" width="40" height="40" class="voxel v15 lv"/>
+              <rect x="60" y="120" width="40" height="40" class="voxel v16 lv"/>
+              <rect x="100" y="120" width="40" height="40" class="voxel v17 rv"/>
+              <rect x="140" y="120" width="40" height="40" class="voxel v18 rv"/>
+
+              <!-- Row 5 (tail) -->
+              <rect x="60"  y="160" width="40" height="40" class="voxel v19 lv dark"/>
+              <rect x="100" y="160" width="40" height="40" class="voxel v20 rv dark"/>
+            </g>
+
+            <!-- right half group (we keep some rects also inside leftHalf above for balance) -->
+            <g id="rightHalf" class="half">
+              <!-- (Right-side duplicates are included here for semantic split; some rects are visually matching left's positions) -->
+              <!-- Row 1 -->
+              <rect x="140" y="0"  width="40" height="40" class="voxel v4 rv dark"/>
+              <rect x="100" y="0"  width="40" height="40" class="voxel v3 rv"/>
+
+              <!-- Row 2 -->
+              <rect x="160" y="40" width="40" height="40" class="voxel v9 rv dark"/>
+              <rect x="120" y="40" width="40" height="40" class="voxel v8 rv"/>
+
+              <!-- Row 3 -->
+              <rect x="160" y="80" width="40" height="40" class="voxel v14 rv dark"/>
+              <rect x="120" y="80" width="40" height="40" class="voxel v13 rv"/>
+
+              <!-- Row 4 -->
+              <rect x="140" y="120" width="40" height="40" class="voxel v18 rv"/>
+              <rect x="100" y="120" width="40" height="40" class="voxel v17 rv"/>
+
+              <!-- Row 5 -->
+              <rect x="100" y="160" width="40" height="40" class="voxel v20 rv dark"/>
+            </g>
+
+            <!-- inner glow that appears when split -->
+            <g id="innerGlow" class="inner-glow" opacity="0">
+              <rect x="96" y="40" width="28" height="120" rx="6" class="glowRect"/>
+            </g>
+
+            <!-- subtle outline path for smooth glowing silhouette -->
+            <path id="outline"
+                  d="M60 10
+                     C30 -10, 0 40, 30 80
+                     C0 120, 40 170, 100 190
+                     C160 170, 200 120, 170 80
+                     C200 40, 170 -10, 140 10
+                     C120 30, 110 40, 100 60
+                     C90 40, 80 30, 60 10Z"
+                  fill="none" stroke="rgba(255,160,170,0.08)" stroke-width="6" />
+          </g>
+        </svg>
+
+        <!-- overlay to capture clicks for accessibility -->
+        <button id="heartButton" class="invisible-btn" aria-label="Click to open heart"></button>
+      </section>
+
+      <!-- First message (appears after split) -->
+      <section id="firstMessage" class="centered-message hidden" aria-live="polite">
+        <h1 class="greeting">Happy Valentine's Day Mommy <span class="emoji">🍒</span></h1>
+        <button id="nextBtn" class="btn primary hidden">Next</button>
+      </section>
+
+      <!-- Love letter card -->
+      <section id="letterWrap" class="hidden" aria-live="polite">
+        <div class="card" id="letterCard" role="article" aria-label="Love Letter">
+          <div class="card-content">
+            <h2 class="card-title">A Little Love Letter</h2>
+            <div id="letterText" class="letter-text"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- container for falling flowers -->
+    <div id="flowers" class="flowers" aria-hidden="true"></div>
+
+    <!-- small attribution -->
+    <footer class="credit">
+      <small>Made with love — interactive Valentine for Mommy</small>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
